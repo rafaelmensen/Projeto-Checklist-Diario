@@ -1,3 +1,51 @@
+from openpyxl import load_workbook
+
+def copiar_linhas(caminho_origem, caminho_destino, intervalo_linhas=(2, 100), senha="rafa"):
+    try:
+        # Abrir a planilha de origem (planilha01)
+        wb_origem = load_workbook(caminho_origem)
+        ws_origem = wb_origem.active
+        
+        # Copiar as linhas especificadas
+        dados_copiados = []
+        for row in ws_origem.iter_rows(min_row=intervalo_linhas[0], max_row=intervalo_linhas[1], values_only=True):
+            dados_copiados.append(row)
+        
+        # Bloquear a planilha de origem
+        ws_origem.protection.sheet = True
+        ws_origem.protection.password = senha
+        wb_origem.save(caminho_origem)
+        
+        # Carregar ou criar a planilha de destino (planilha02)
+        try:
+            wb_destino = load_workbook(caminho_destino)
+        except FileNotFoundError:
+            wb_destino = load_workbook(caminho_origem)
+            wb_destino.remove(wb_destino.active)
+        
+        ws_destino = wb_destino.create_sheet(title="Dados Copiados")
+
+        # Adicionar os dados na planilha de destino
+        for row in dados_copiados:
+            ws_destino.append(row)
+        
+        # Salvar a planilha de destino
+        wb_destino.save(caminho_destino)
+
+        print(f"Dados copiados com sucesso de {intervalo_linhas[0]} a {intervalo_linhas[1]}. A planilha de origem foi bloqueada com a senha '{senha}'.")
+
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
+
+# Caminhos das planilhas
+caminho_origem = 'planilha01.xlsx'
+caminho_destino = 'planilha02.xlsx'
+
+copiar_linhas(caminho_origem, caminho_destino)
+
+
+
+
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
