@@ -249,3 +249,22 @@ const updateTodoLocalStorage = (todoOldText, todoNewText) => {
 };
 
 loadTodos();
+
+
+import pandas as pd
+
+# Load the existing .parquet file
+input_file = 'your_input_file.parquet'  # Replace with your input file path
+output_file = 'your_output_file.parquet'  # Replace with your desired output file path
+
+# Read the parquet file into a DataFrame
+df = pd.read_parquet(input_file)
+
+# Add a new column with the specified date
+df['date'] = pd.to_datetime('2025-01-01')
+
+# Save the modified DataFrame back to a .parquet file
+df.to_parquet(output_file, index=False)
+
+print(f"Updated .parquet file saved as: {output_file}")
+
